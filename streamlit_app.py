@@ -169,7 +169,7 @@ def fetch_ranking_and_birthyear(player, team):
         # Search for the player's row with matching team name
         for row in soup.find_all('tr'):
             cells = row.find_all('td')
-            if len(cells) >= 5 and team in cells[4].text.strip():
+            if len(cells) >= 5 and cells[4].text.strip() in team:
                 player_row = row
                 break
 
