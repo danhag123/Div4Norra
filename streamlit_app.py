@@ -175,10 +175,11 @@ def fetch_ranking(player, team):
 
         # If we found a matching player row, extract the information
         if player_row:
-            # Extract Rankingpoäng by combining the second hoyre cell and the next td
+            # Extract Rankingpoäng
             hoyre_cells = player_row.find_all(class_="hoyre")
             if len(hoyre_cells) >= 2:
                 ranking_points = hoyre_cells[1].text.strip()
+                return ranking_points
             else:
                 ranking_points = "N/A"
     return "N/A"  # Return N/A if no data is found
