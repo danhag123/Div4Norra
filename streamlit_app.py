@@ -151,7 +151,7 @@ def scrape_main_page():
         details_url = 'https://www.profixio.com/fx/' + link['href']
         scrape_match_details(details_url)
 
-def fetch_ranking_and_birthyear(player, team):
+def fetch_ranking(player, team):
     """Fetch ranking points and birth year for a player from the ranking site."""
     last_name, first_name = player.split(', ')
     url = f"https://www.profixio.com/fx/ranking_sbtf/ranking_sbtf_list.php?searching=1&rid=&distr=47&club=&licencesubtype=&gender=m&age=&ln={last_name}&fn={first_name}"
@@ -169,7 +169,7 @@ def fetch_ranking_and_birthyear(player, team):
         # Search for the player's row with matching team name
         for row in soup.find_all('tr'):
             cells = row.find_all('td')
-            if len(cells) >= 5 and cells[4].text.strip() in team:
+            if len(cells) >= 5 and cells[4].text.strip()[:5] in team:
                 player_row = row
                 break
 
@@ -178,24 +178,17 @@ def fetch_ranking_and_birthyear(player, team):
             # Extract Rankingpoäng by combining the second hoyre cell and the next td
             hoyre_cells = player_row.find_all(class_="hoyre")
             if len(hoyre_cells) >= 2:
-                main_points = hoyre_cells[1].text.strip()
-                change_since_previous_ranking = hoyre_cells[1].find_next_sibling('td').text.strip()
-                ranking_points = f"{main_points} {change_since_previous_ranking}"
+                ranking_points = hoyre_cells[1].text.strip()
             else:
                 ranking_points = "N/A"
-            
-            # Extract Född from the appropriate cell
-            birth_year = cells[3].text.strip() if len(cells) >= 3 else "N/A"
-            return ranking_points, birth_year
-
-    return "N/A", "N/A"  # Return N/A if no data is found
+    return "N/A"  # Return N/A if no data is found
 
 def convert_to_dataframe():
-    """Convert the teams_data dictionary to a pandas DataFrame and add Rankingpoäng and Född fields."""
+    """Convert the teams_data dictionary to a pandas DataFrame and add Rankingpoäng field."""
     data = []
     for team, players in teams_data.items():
         for player, positions in players.items():
-            ranking_points, birth_year = fetch_ranking_and_birthyear(player, team)
+            ranking_points = fetch_ranking(player, team)
             row = {
                 'Lag': team,
                 'Spelare': player,
@@ -203,9 +196,7 @@ def convert_to_dataframe():
                 'Position 2': positions[2],
                 'Position 3': positions[3],
                 'Position 4': positions[4],
-                'Rankingpoäng': ranking_points,
-                'Född': birth_year
-            }
+                'Rankingpoäng': ranking_points            }
             data.append(row)
     return pd.DataFrame(data)
 
@@ -231,7 +222,7 @@ st.header(f'Statistik för {team_selected}')
 team_data = df[df['Lag'] == team_selected]
 
 # Display the table of players and their position stats
-st.write(team_data[['Spelare', 'Position 1', 'Position 2', 'Position 3', 'Position 4', 'Rankingpoäng', 'Född']])
+st.write(team_data[['Spelare', 'Position 1', 'Position 2', 'Position 3', 'Position 4', 'Rankingpoäng']])
 
 # Option to download the data as CSV
 st.download_button("Ladda ner lagets statistik som CSV", team_data.to_csv(index=False), "team_stats.csv")
