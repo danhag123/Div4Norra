@@ -157,7 +157,7 @@ def fetch_ranking_and_birthyear(player, team):
     url = f"https://www.profixio.com/fx/ranking_sbtf/ranking_sbtf_list.php?searching=1&rid=&distr=47&club=&licencesubtype=&gender=m&age=&ln={last_name}&fn={first_name}"
     
     # Try fetching data with male gender first, then female if needed
-    for gender in ['m', 'f']:
+    for gender in ['m', 'k']:
         url = url.replace("gender=m", f"gender={gender}")
         response = requests.get(url)
         if response.status_code != 200:
@@ -169,7 +169,7 @@ def fetch_ranking_and_birthyear(player, team):
         # Search for the player's row with matching team name
         for row in soup.find_all('tr'):
             cells = row.find_all('td')
-            if len(cells) >= 5 and cells[4].text.strip() == team:
+            if len(cells) >= 5 and team in cells[4].text.strip():
                 player_row = row
                 break
 
@@ -179,13 +179,13 @@ def fetch_ranking_and_birthyear(player, team):
             hoyre_cells = player_row.find_all(class_="hoyre")
             if len(hoyre_cells) >= 2:
                 main_points = hoyre_cells[1].text.strip()
-                additional_points = hoyre_cells[1].find_next_sibling('td').text.strip()
-                ranking_points = f"{main_points} {additional_points}"
+                change_since_previous_ranking = hoyre_cells[1].find_next_sibling('td').text.strip()
+                ranking_points = f"{main_points} {change_since_previous_ranking}"
             else:
                 ranking_points = "N/A"
             
             # Extract Född from the appropriate cell
-            birth_year = cells[2].text.strip() if len(cells) >= 3 else "N/A"
+            birth_year = cells[3].text.strip() if len(cells) >= 3 else "N/A"
             return ranking_points, birth_year
 
     return "N/A", "N/A"  # Return N/A if no data is found
