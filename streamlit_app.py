@@ -227,7 +227,7 @@ st.header(f'Statistik för {team_selected}')
 team_data = df[df['Lag'] == team_selected]
 
 # Display the table of players and their position stats
-st.write(team_data[['Spelare', 'Position 1', 'Position 2', 'Position 3', 'Position 4', 'Rankingpoäng']])
+st.write(team_data[['Spelare', 'Position 1', 'Position 2', 'Position 3', 'Position 4', 'Rankingpoäng', 'Medelranking serie', 'Medelranking lag']])
 
 # Option to download the data as CSV
 st.download_button("Ladda ner lagets statistik som CSV", team_data.to_csv(index=False), "team_stats.csv")
