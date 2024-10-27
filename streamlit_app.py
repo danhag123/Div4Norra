@@ -207,6 +207,8 @@ scrape_main_page()
 # Convert to DataFrame
 df = convert_to_dataframe()
 
+df["Rankingpoäng"] = df["Rankingpoäng"].fillna(0).astype(int)  # Fills NaNs with 0, then converts
+
 df["Medelranking serie"] = round(df["Rankingpoäng"].mean(), 1)
 
 df["Medelranking lag"] = df.groupby("Lag")["Rankingpoäng"].transform(lambda x: round(x.mean(), 1))
