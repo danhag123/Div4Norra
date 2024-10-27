@@ -207,6 +207,10 @@ scrape_main_page()
 # Convert to DataFrame
 df = convert_to_dataframe()
 
+df["Medelranking serie"] = round(df["Rankingpoäng"].mean(), 1)
+
+df["Medelranking lag"] = df.groupby("Lag")["Rankingpoäng"].transform(lambda x: round(x.mean(), 1))
+
 # Streamlit app
 st.title('Uppställningar Division 4 Norra 2024-25')
 
