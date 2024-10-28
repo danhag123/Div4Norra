@@ -180,9 +180,8 @@ def fetch_ranking(player, team):
             if len(hoyre_cells) >= 2:
                 ranking_points = hoyre_cells[1].text.strip()
                 return ranking_points
-            else:
-                ranking_points = "0"
-    return "0"  # Return N/A if no data is found
+
+    return "0 "  # Return N/A if no data is found
 
 def convert_to_dataframe():
     """Convert the teams_data dictionary to a pandas DataFrame and add Rankingpoäng field."""
@@ -207,11 +206,13 @@ scrape_main_page()
 # Convert to DataFrame
 df = convert_to_dataframe()
 
-df["Rankingpoäng"] = df["Rankingpoäng"].fillna(0).astype(int)  # Fills NaNs with 0, then converts
+df["Rankingpoäng"] = df["Rankingpoäng"].fillna(0).astype(int)  
 
-df["Medelranking serie"] = round(df["Rankingpoäng"].mean(), 1)
+# Calculate the overall mean only for rows where "Rankingpoäng" is greater than 0
+df["Medelranking serie"] = round(df.loc[df["Rankingpoäng"] > 0, "Rankingpoäng"].mean(), 1)
 
-df["Medelranking lag"] = df.groupby("Lag")["Rankingpoäng"].transform(lambda x: round(x.mean(), 1))
+# Calculate the mean per "Lag" only for rows where "Rankingpoäng" is greater than 0
+df["Medelranking lag"] = df.groupby("Lag")["Rankingpoäng"].transform(lambda x: round(x[x > 0].mean(), 1))
 
 # Streamlit app
 st.title('Uppställningar Division 4 Norra 2024-25')
