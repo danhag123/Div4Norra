@@ -181,8 +181,8 @@ def fetch_ranking(player, team):
                 ranking_points = hoyre_cells[1].text.strip()
                 return ranking_points
             else:
-                ranking_points = "N/A"
-    return "N/A"  # Return N/A if no data is found
+                ranking_points = "0"
+    return "0"  # Return N/A if no data is found
 
 def convert_to_dataframe():
     """Convert the teams_data dictionary to a pandas DataFrame and add Rankingpoäng field."""
